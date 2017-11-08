@@ -28,6 +28,7 @@ $meeting = json_decode( $raw_data, true );
 
 $email = $meeting["email"];
 $firstname = $meeting["firstName"];
+$meetingdate = $meeting["meeting_date"];
 
 session_start();
 
@@ -53,7 +54,8 @@ $contactApi = $api->newApi('contacts', $auth, $mauticUrl);
 // Cria o payload para a API do Mautic
 $mautic_data = array(
     'email'        =>    $email,  // customize a variavel
-    'firstname'    =>    $firstname    // customize a variavel
+    'firstname'    =>    $firstname,    // customize a variavel
+    'meeting_date' => $meetingdate
 );
 
 // Pesquisa o contato pelo e-mail
@@ -76,7 +78,13 @@ foreach ($decodedJson as $lista) {
 $createIfNotFound = true;
 
 // Envia a requisição para o Mautic atualizar ou criar o contato
-$contact = $contactApi->edit($id, $mautic_data, $createIfNotFound);
+$convertedDate = new DateTime(strtotime($meetingdate), new DateTimeZone('America/Sao_Paulo'));
+$contact = $contactApi->edit($id, $convertedDate, $createIfNotFound);
 
 // finalizado
 echo "OK";
+
+
+//$convertedDate = new DateTime(strtotime($value), new DateTimeZone('America/Chicago'));
+
+//print_r( $convertedDate );
